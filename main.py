@@ -8,13 +8,17 @@ from datetime import datetime
 import json
 from pathlib import Path
 import random
+import os
+
+# Get the script directory
+SCRIPT_DIR = Path(__file__).parent.absolute()
 
 # Configuration
 CONFIG = {
     "url": "https://www.cgeonline.com.ar/informacion/apertura-de-citas.html",
     "check_interval_minutes": 30,
     "max_retries": 3,
-    "retry_wait_time": 60,  # seconds
+    "retry_wait_time": 60,
     "user_agents": [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
@@ -22,16 +26,18 @@ CONFIG = {
     ]
 }
 
+# File paths
+LOG_FILE = SCRIPT_DIR / "passport_monitor.log"
+LAST_STATE_FILE = SCRIPT_DIR / "last_state.json"
+ICON_FILE = SCRIPT_DIR / "favicon.ico"
+
 # Logging configuration
 logging.basicConfig(
-    filename='passport_monitor.log',
+    filename=str(LOG_FILE),
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-
-# File to store the last known state
-LAST_STATE_FILE = Path("last_state.json")
 
 def save_last_state(state):
     try:
@@ -51,10 +57,13 @@ def load_last_state():
 
 def send_notification(title, message):
     try:
+        # Check if icon file exists
+        icon_path = str(ICON_FILE) if ICON_FILE.exists() else None
+        
         notification.notify(
             title=title,
             message=message,
-            app_icon="favicon.ico",
+            app_icon=icon_path,
             timeout=20
         )
         logging.info(f"Notification sent: {title} - {message}")
@@ -135,7 +144,7 @@ def scheduled_check():
 def main():
     logging.info("Starting passport monitoring script")
     print(f"Script started. Checking every {CONFIG['check_interval_minutes']} minutes.")
-    print(f"Logs are saved in: {Path('passport_monitor.log').absolute()}")
+    print(f"Logs are saved in: {LOG_FILE}")
     
     # First immediate check
     scheduled_check()
