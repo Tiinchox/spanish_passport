@@ -8,7 +8,7 @@ from pathlib import Path
 import random
 import os
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Mail, Email, To, Content
 from dotenv import load_dotenv
 
 # Basic config
@@ -44,12 +44,16 @@ def send_email(subject, message):
     """Send email using SendGrid"""
     try:
         sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
-        mail = Mail(
-            from_email=CONFIG['email']['sender'],
-            to_emails=CONFIG['email']['recipient'],
-            subject=subject,
-            plain_text_content=message
-        )
+        
+        # Create email components
+        from_email = Email(CONFIG['email']['sender'])
+        to_email = To(CONFIG['email']['recipient'])
+        content = Content("text/plain", message)
+        
+        # Create mail object with all components
+        mail = Mail(from_email, to_email, subject, content)
+        
+        # Send email
         response = sg.send(mail)
         logging.info(f"Email sent successfully. Status code: {response.status_code}")
     except Exception as e:

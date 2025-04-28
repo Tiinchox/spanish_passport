@@ -15,7 +15,7 @@ A Python script that monitors the Spanish consulate website for passport appoint
 - Python 3.8 or higher
 - Windows OS
 - Internet connection
-- SendGrid account (free tier available)
+- SendGrid account (free trial available)
 
 ## Quick Start
 
