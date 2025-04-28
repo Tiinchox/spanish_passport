@@ -2,8 +2,8 @@
 setlocal enabledelayedexpansion
 
 :: Get the current directory
-set "SCRIPT_DIR=%~dp0"
-set "SCRIPT_PATH=%SCRIPT_DIR%main.py"
+set "SCRIPT_DIR=%~dp0.."
+set "SCRIPT_PATH=%SCRIPT_DIR%\src\main.py"
 
 echo Script directory: "%SCRIPT_DIR%"
 echo Script path: "%SCRIPT_PATH%"
@@ -16,9 +16,9 @@ if not exist "%SCRIPT_PATH%" (
 )
 
 :: Check if virtual environment exists and set Python path
-if exist "%SCRIPT_DIR%.venv\Scripts\activate.bat" (
+if exist "%SCRIPT_DIR%\.venv\Scripts\activate.bat" (
     echo Virtual environment found
-    set "PYTHON_CMD=%SCRIPT_DIR%.venv\Scripts\python.exe"
+    set "PYTHON_CMD=%SCRIPT_DIR%\.venv\Scripts\python.exe"
 ) else (
     echo Warning: No virtual environment found, using system Python
     echo It is recommended to create a virtual environment first:
