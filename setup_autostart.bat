@@ -20,7 +20,11 @@ if exist "%SCRIPT_DIR%.venv\Scripts\activate.bat" (
     echo Virtual environment found
     set "PYTHON_CMD=%SCRIPT_DIR%.venv\Scripts\python.exe"
 ) else (
-    echo No virtual environment found, using system Python
+    echo Warning: No virtual environment found, using system Python
+    echo It is recommended to create a virtual environment first:
+    echo python -m venv .venv
+    echo .venv\Scripts\activate
+    echo pip install -r requirements.txt
     set "PYTHON_CMD=python"
 )
 

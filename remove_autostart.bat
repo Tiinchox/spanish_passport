@@ -4,9 +4,9 @@
 schtasks /delete /tn "PassportMonitor" /f
 
 if %ERRORLEVEL% equ 0 (
-    echo Tarea eliminada exitosamente!
+    echo Task removed successfully!
 ) else (
-    echo Error al eliminar la tarea. Por favor, ejecuta este script como administrador.
+    echo Error removing task. Please run this script as administrator.
 )
 
 pause 
