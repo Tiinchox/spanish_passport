@@ -60,17 +60,23 @@ The script uses the following settings (in `main.py`):
 
 1. Run the script directly:
    ```bash
-   python main.py
+   python src/main.py
    ```
-2. Or use Task Scheduler to run the "PassportMonitor" task
+2. Test email functionality:
+   ```bash
+   python src/main.py --test-email
+   ```
+3. Or use Task Scheduler to run the "PassportMonitor" task
 
 ## Files
 
-- `main.py`: Main script
+- `src/main.py`: Main script
+- `src/email_sender.py`: Email notification system
+- `src/passport_checker.py`: Website monitoring logic 
 - `setup_autostart.bat`: Automatic startup configuration
 - `requirements.txt`: Python dependencies
-- `passport_monitor.log`: Activity log
-- `last_state.json`: Last known appointment dates
+- `logs/passport_monitor.log`: Activity log
+- `data/last_state.json`: Last known appointment dates
 - `.env`: Email configuration
 
 ## Troubleshooting
@@ -81,6 +87,7 @@ If the script doesn't work:
 2. Verify the scheduled task exists and is enabled
 3. Ensure Python and dependencies are installed correctly
 4. Check your SendGrid credentials in the `.env` file
+5. Test email functionality using the `--test-email` flag
 
 ## Notes
 

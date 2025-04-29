@@ -3,9 +3,11 @@ import time
 import logging
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 from email_sender import EmailSender
 from passport_checker import PassportChecker
+from datetime import datetime
 
 # Basic config
 SCRIPT_DIR = Path(__file__).parent.parent.absolute()
@@ -32,8 +34,51 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
+def test_email():
+    """Function to test email sending functionality"""
+    logging.info("Testing email functionality")
+    print("Sending test email...")
+    
+    # Initialize email sender
+    email_sender = EmailSender(
+        api_key=os.getenv('SENDGRID_API_KEY'),
+        sender_email=os.getenv('SENDER_EMAIL'),
+        recipient_email=os.getenv('RECIPIENT_EMAIL')
+    )
+    
+    # Verify environment variables
+    if not all([os.getenv('SENDGRID_API_KEY'), os.getenv('SENDER_EMAIL'), os.getenv('RECIPIENT_EMAIL')]):
+        print("❌ Error: Missing environment variables. Please check your .env file")
+        return
+    
+    print(f"Sending test email to: {os.getenv('RECIPIENT_EMAIL')}")
+    
+    # Send test email
+    subject = "Test Email - Passport Monitoring System"
+    message = f"""
+This is a test email from the passport monitoring system.
+
+If you received this message, the email configuration is working correctly.
+
+Date and time of sending: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    """
+    
+    success = email_sender.send(subject, message)
+    
+    if success:
+        print("✅ Test email sent successfully!")
+        logging.info("Test email sent successfully")
+    else:
+        print("❌ Failed to send test email. Check logs for details.")
+        logging.error("Failed to send test email")
+
 def main():
     """Main function"""
+    # Check if test mode is requested
+    if len(sys.argv) > 1 and sys.argv[1] == "--test-email":
+        test_email()
+        return
+        
     logging.info("Starting passport monitoring script")
     print(f"Script started. Checking every {CONFIG['check_interval_minutes']} minutes.")
     
