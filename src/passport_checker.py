@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import random
 import time
+from datetime import datetime
 
 class PassportChecker:
     def __init__(self, config, email_sender):
@@ -15,6 +16,8 @@ class PassportChecker:
 
     def get_passport_dates(self):
         """Get passport appointment dates from the website"""
+        logging.info(f"Checking consulate website for passport appointment updates at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        
         headers = {
             "User-Agent": random.choice(self.config["user_agents"]),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -31,10 +34,12 @@ class PassportChecker:
                 for row in soup.find_all("tr"):
                     cells = row.find_all("td")
                     if len(cells) >= 3 and "Pasaportes" in cells[0].text and "renovación y primera vez" in cells[0].text:
-                        return {
+                        dates = {
                             "last_opening": cells[1].text.strip(),
                             "next_opening": cells[2].text.strip()
                         }
+                        logging.info(f"Successfully retrieved appointment dates: Last opening: {dates['last_opening']}, Next opening: {dates['next_opening']}")
+                        return dates
                 
                 logging.warning("Passport row not found in the table")
                 return None
@@ -54,6 +59,7 @@ class PassportChecker:
         """Check for changes in appointment dates"""
         current_state = self.get_passport_dates()
         if not current_state:
+            logging.warning("Could not retrieve appointment dates, skipping check")
             return
 
         try:
@@ -63,6 +69,9 @@ class PassportChecker:
             last_state = {}
 
         if current_state != last_state:
+            logging.info(f"Changes detected! Previous: {last_state if last_state else 'None'}, Current: {current_state}")
+            logging.info("Sending email notification about the changes")
+            
             message = (
                 f"Changes detected in passport appointment dates!\n\n"
                 f"Last opening: {current_state['last_opening']}\n"
@@ -75,5 +84,8 @@ class PassportChecker:
             
             try:
                 self.last_state_file.write_text(json.dumps(current_state, indent=2))
+                logging.info("Updated last state file with new appointment dates")
             except Exception as e:
-                logging.error(f"Error saving state: {e}") 
+                logging.error(f"Error saving state: {e}")
+        else:
+            logging.info("No changes detected in appointment dates") 
